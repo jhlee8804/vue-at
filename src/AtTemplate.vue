@@ -4,6 +4,7 @@
   <div ref="wrap"
     class="atwho-wrap"
     @compositionstart="handleCompositionStart"
+    @compositionupdate="handleCompositionUpdate"
     @compositionend="handleCompositionEnd"
     @input="handleInput()"
     @keydown.capture="handleKeyDown"

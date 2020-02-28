@@ -273,14 +273,18 @@ export default {
 
     // compositionStart -> input -> compositionEnd
     handleCompositionStart () {
-      this.hasComposition = true
+      //this.hasComposition = true
+      this.handleInput()
+    },
+    handleCompositionUpdate() {
+      this.handleInput()
     },
     handleCompositionEnd () {
-      this.hasComposition = false
+      //this.hasComposition = false
       this.handleInput()
     },
     handleInput (keep) {
-      if (this.hasComposition) return
+      //if (this.hasComposition) return
       const el = this.$el.querySelector('[contenteditable]')
       this.$emit('input', el.innerHTML)
 

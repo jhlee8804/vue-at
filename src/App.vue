@@ -83,6 +83,7 @@ let members = [
   "myrtie.green","elsie.graham","Elva Neal",
   "肖逵",
   "amy.sandoval","katie.leonard","lottie.hamilton",
+  "세종", "세종대왕", "광개토대왕", "이순신", "이황", "이이"
   /* eslint-enable */
 ]
 members = members.map((v, i) => {
