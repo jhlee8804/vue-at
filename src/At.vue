@@ -159,7 +159,15 @@ export default {
     },
     dispatchInput () {
       let el = this.$el.querySelector('[contenteditable]')
-      let ev = new Event('input', { bubbles: true })
+      let ev = null
+
+      if (typeof(Event) === 'function') {
+        ev = new Event('input', { bubbles: true })
+      } else {
+        ev = document.createEvent('Event')
+        ev.initEvent('input', true, true)
+      }
+      
       el.dispatchEvent(ev)
     },
 
@@ -272,15 +280,18 @@ export default {
     },
 
     // compositionStart -> input -> compositionEnd
-    handleCompositionStart () {
-      //this.hasComposition = true
+    handleCompositionStart (e) {
+      //console.log(`handleCompositionStart: "${e.data}"`, e)
+      this.hasComposition = true
       this.handleInput()
     },
-    handleCompositionUpdate() {
+    handleCompositionUpdate(e) {
+      //console.log(`handleCompositionUpdate: "${e.data}"`, e)
       this.handleInput()
     },
-    handleCompositionEnd () {
-      //this.hasComposition = false
+    handleCompositionEnd (e) {
+      //console.log(`handleCompositionEnd: "${e.data}"`, e)
+      this.hasComposition = false
       this.handleInput()
     },
     handleInput (keep) {
@@ -326,6 +337,8 @@ export default {
             const name = itemName(v)
             return filterMatch(name, chunk, at)
           })
+        
+          //console.log(`text: "${text}", chunk: "${chunk}", matched: ${matched.length}`)
 
           show = false
           if (matched.length) {

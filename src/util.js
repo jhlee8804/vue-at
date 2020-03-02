@@ -64,7 +64,7 @@ export function getPrecedingRange() {
   const r = getRange()
   if (r) {
     const range = r.cloneRange()
-    range.collapse(true)
+    range.collapse(false/*true*/) // IE에서 입력 중인 문자는 포함이 안되는 문제가 있으므로 true -> false로 변경
     // var el = closest(range.endContainer, d => d.contentEditable)
     // range.setStart(el, 0)
     range.setStart(range.endContainer, 0)
