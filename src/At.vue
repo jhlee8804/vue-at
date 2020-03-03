@@ -399,7 +399,7 @@ export default {
           }
         }
 
-        console.log(`openPanel - range: "${r.toString()}"(${r.toString().length}), endContainer(type: ${endContainer.nodeType}): "${endContainer.textContent}", offset: ${offset}, at.length: ${at.length}`, endContainer)          
+        //console.log(`openPanel - range: "${r.toString()}"(${r.toString().length}), endContainer(type: ${endContainer.nodeType}): "${endContainer.textContent}", offset: ${offset}, at.length: ${at.length}`, endContainer)          
         
         r.setStart(endContainer, startOffset) // 从@后第一位开始
 
