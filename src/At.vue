@@ -181,7 +181,7 @@ export default {
       this.insertItem()
     },
     handleDelete (e) {
-      const range = getPrecedingRange()
+      const range = getPrecedingRange(true)
       if (range) {
         // fixme: Very bad code from me
         if (this.customsEmbedded && range.endOffset >= 1) {
@@ -228,11 +228,16 @@ export default {
             const name = itemName(v)
             return deleteMatch(name, chunk, suffix)
           })
+
+          //console.log(`handleDelete - index: ${index}, chunk: "${chunk}", has: ${has}`)
+
           if (has) {
             e.preventDefault()
             e.stopPropagation()
             const r = getRange()
             if (r) {
+              //console.log(`handleDelete - range: "${r.toString()}", endContainer: "${r.endContainer.textContent}", index: ${index}`)
+
               r.setStart(r.endContainer, index)
               r.deleteContents()
               applyRange(r)

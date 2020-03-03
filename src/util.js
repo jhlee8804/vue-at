@@ -60,11 +60,12 @@ export function closest (el, predicate) {
 // http://stackoverflow.com/questions/15157435/get-last-character-before-caret-position-in-javascript
 // 修复 "空格+表情+空格+@" range报错 应设(endContainer, 0)
 // stackoverflow上的这段代码有bug
-export function getPrecedingRange() {
+// |collapseToStart|: IE에서 입력 중인 문자는 포함이 안되는 문제가 있으므로 기본값을 true -> false로 변경
+export function getPrecedingRange(collapseToStart = false) {
   const r = getRange()
   if (r) {
     const range = r.cloneRange()
-    range.collapse(false/*true*/) // IE에서 입력 중인 문자는 포함이 안되는 문제가 있으므로 true -> false로 변경
+    range.collapse(collapseToStart/*true*/)
     // var el = closest(range.endContainer, d => d.contentEditable)
     // range.setStart(el, 0)
     range.setStart(range.endContainer, 0)
