@@ -373,9 +373,36 @@ export default {
     openPanel (list, range, offset, at) {
       const fn = () => {
         const r = range.cloneRange()
-        //console.log(`openPanel - range: "${r.toString()}"`)
+        
+        let endContainer = r.endContainer,
+          startOffset = offset + at.length
 
-        r.setStart(r.endContainer, offset + at.length) // 从@后第一位开始
+        // NOTE(jhlee): endContainer가 TEXT_NODE 타입으로 반환되어야 하는데 IE에서 연속으로 멘션을 적을 경우 
+        // 2번째부터 ELEMENT_NODE (HTMLDivElement)이 반환되어서 IndexSizeError가 발생함.
+        // => 컨테이너에서 offset에 해당되는 TEXT_NODE를 찾는다.
+        // range.setStart: https://developer.mozilla.org/en-US/docs/Web/API/Range/setStart
+        // NodeType: https://developer.mozilla.org/en-US/docs/Web/API/Node
+        if (endContainer.nodeType !== Node.TEXT_NODE) {
+          let pos = 0
+          for (let i = 0; i < endContainer.childNodes.length; i++) {
+            const node = endContainer.childNodes[i]
+            if (node.nodeType !== Node.TEXT_NODE)
+              continue
+
+            if (startOffset <= pos + node.textContent.length) {
+              endContainer = node
+              startOffset -= pos
+              break
+            }
+
+            pos += node.textContent.length
+          }
+        }
+
+        console.log(`openPanel - range: "${r.toString()}"(${r.toString().length}), endContainer(type: ${endContainer.nodeType}): "${endContainer.textContent}", offset: ${offset}, at.length: ${at.length}`, endContainer)          
+        
+        r.setStart(endContainer, startOffset) // 从@后第一位开始
+
         // todo: 根据窗口空间 判断向上或是向下展开
         const rect = r.getClientRects()[0]
         this.atwho = {
@@ -482,8 +509,30 @@ export default {
 
       // Leading `@` is automatically dropped as `customsEmbedded=true`
       // You can fully custom the output inside the embedded slot
-      const start = customsEmbedded ? index : index + at.length
-      r.setStart(r.endContainer, start)
+      let startOffset = customsEmbedded ? index : index + at.length,
+        endContainer = r.endContainer
+
+      // NOTE(jhlee): endContainer가 TEXT_NODE 타입으로 반환되어야 하는데 IE에서 연속으로 멘션을 적을 경우 
+      // 2번째부터 ELEMENT_NODE (HTMLDivElement)이 반환되어서 IndexSizeError가 발생함.
+      // => 컨테이너에서 offset에 해당되는 TEXT_NODE를 찾는다.
+      if (endContainer.nodeType !== Node.TEXT_NODE) {
+        let pos = 0
+        for (let i = 0; i < endContainer.childNodes.length; i++) {
+          const node = endContainer.childNodes[i]
+          if (node.nodeType !== Node.TEXT_NODE)
+            continue
+
+          if (startOffset <= pos + node.textContent.length) {
+            endContainer = node
+            startOffset -= pos
+            break
+          }
+
+          pos += node.textContent.length
+        }
+      }
+
+      r.setStart(endContainer, startOffset)
 
       // hack: 连续两次 可以确保click后 focus回来 range真正生效
       applyRange(r)
