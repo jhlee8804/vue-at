@@ -337,8 +337,6 @@ export default {
             const name = itemName(v)
             return filterMatch(name, chunk, at)
           })
-        
-          //console.log(`text: "${text}", chunk: "${chunk}", matched: ${matched.length}`)
 
           show = false
           if (matched.length) {
@@ -350,6 +348,8 @@ export default {
               }
             }
           }
+        
+          //console.log(`text: "${text}", chunk: "${chunk}", index: ${index}, matched: ${matched.length}, show: ${show}`)
 
           if (show) {
             this.openPanel(matched, range, index, at)
@@ -368,6 +368,8 @@ export default {
     openPanel (list, range, offset, at) {
       const fn = () => {
         const r = range.cloneRange()
+        //console.log(`openPanel - range: "${r.toString()}"`)
+
         r.setStart(r.endContainer, offset + at.length) // 从@后第一位开始
         // todo: 根据窗口空间 判断向上或是向下展开
         const rect = r.getClientRects()[0]
@@ -380,11 +382,15 @@ export default {
           cur: 0 // todo: 尽可能记录
         }
       }
-      if (this.atwho) {
-        fn()
-      } else { // 焦点超出了显示区域 需要提供延时以移动指针 再计算位置
-        setTimeout(fn, 10)
-      }
+
+      // closePanel이 먼저 호출되었을 경우 (조합문자 - 자음 입력하기 전 closePanel이 먼저 호출되었음에도 불구하고 timeout 때문에 패널이 보이는 문제가 발생)
+      // cf. "이지혀" -> 매칭되는 케이스가 없는데 "이지"를 입력했을 때의 openPanel이 뒤늦게 호출되어서 패널이 계속 보임
+      fn()
+      // if (this.atwho) {
+      //   fn()
+      // } else { // 焦点超出了显示区域 需要提供延时以移动指针 再计算位置
+      //   setTimeout(fn, 10)
+      // }
     },
 
     scrollToCur () {
